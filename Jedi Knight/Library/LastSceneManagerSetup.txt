@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/Google Cardboard/Cardboard/DemoScene/DemoScene.unity
+  isLoaded: 1
+  isActive: 1
