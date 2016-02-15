@@ -1,12 +1,12 @@
 # =============== #
 # Unity generated #
 # =============== #
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild/
-/[Bb]uilds/
-/Assets/AssetStoreTools*
+Jedi\ Knight/[Ll]ibrary/
+Jedi\ Knight/[Tt]emp/
+Jedi\ Knight/[Oo]bj/
+Jedi\ Knight/[Bb]uild/
+Jedi\ Knight/[Bb]uilds/
+Jedi\ Knight/Assets/AssetStoreTools*
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
