@@ -1,102 +1,24 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class NetworkManager : MonoBehaviour {
 
 	public GameObject playerPrefab;
+	public GameObject serverScreenPrefab;
+	public GameObject clientScreenPrefab;
+	public GameObject clientGUIDScreenPrefab;
+	public GameObject clientIPScreenPrefab;
 
+	private const int numConnections = 4;
+	private bool useNat;
+	private const int portNum = 23400;
 	private const string typeName = "JediKnight";
 	private const string gameName = "Lightsaber";
-	private HostData[] hostList;
 
 	void Start()
 	{
 		Cardboard.SDK.VRModeEnabled = false;
-	}
-
-	public void serverButtonClick ()
-	{
-		if (!Network.isClient && !Network.isServer)
-		{
-			GameObject menu = GameObject.FindGameObjectWithTag ("Main Menu");
-			Destroy (menu);
-			Cardboard.SDK.VRModeEnabled = true;
-			StartServer ();
-		}
-	}
-
-	private void StartServer()
-	{
-		Network.InitializeServer(4, 23400, !Network.HavePublicAddress());
-		MasterServer.RegisterHost(typeName, gameName);
-	}
-
-	// If StartServer is successful, this will be called
-	void OnServerInitialized()
-	{
-		Debug.Log("Server Initializied");
-		SpawnPlayer();
-	}
-
-//	void OnGUI()
-//	{
-//		if (!Network.isClient && !Network.isServer)
-//		{
-//			if (GUI.Button(new Rect(100, 100, 250, 100), "Start Server"))
-//				StartServer();
-//
-//			if (GUI.Button(new Rect(100, 250, 250, 100), "Refresh Hosts"))
-//				RefreshHostList();
-//
-//			if (hostList != null)
-//			{
-//				for (int i = 0; i < hostList.Length; i++)
-//				{
-//					if (GUI.Button(new Rect(400, 100 + (110 * i), 300, 100), hostList[i].gameName))
-//						JoinServer(hostList[i]);
-//				}
-//			}
-//		}
-//	}
-//
-	private void RefreshHostList()
-	{
-		MasterServer.RequestHostList(typeName);
-	}
-
-	void OnMasterServerEvent(MasterServerEvent msEvent)
-	{
-		if (msEvent == MasterServerEvent.HostListReceived)
-			hostList = MasterServer.PollHostList();
-	}
-
-	/* TODO: Either make the GUI display a real host list or
-	 * (more likely) have the client input the IP/Host to connect
-	 * to.
-	 */
-	public void clientButtonClick ()
-	{
-		if (!Network.isClient && !Network.isServer)
-		{
-			GameObject menu = GameObject.FindGameObjectWithTag ("Main Menu");
-			Destroy (menu);
-			Cardboard.SDK.VRModeEnabled = true;
-			JoinServer (hostList [0]);
-		}
-	}
-
-	private void JoinServer(HostData hostData)
-	{
-		Network.Connect(hostData);
-	}
-
-	/* Probably don't want to spawn a player but do something with
-	 * registering the new client's gyro info and stuff
-	 */
-	void OnConnectedToServer()
-	{
-		Debug.Log("Server Joined");
-		SpawnPlayer();
 	}
 
 	private void SpawnPlayer()
@@ -104,4 +26,175 @@ public class NetworkManager : MonoBehaviour {
 		Network.Instantiate(playerPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
 	}
 
+	/********************
+	 * Server Side Code *
+	 ********************/
+	public void serverButtonClick ()
+	{
+		if (!Network.isClient && !Network.isServer)
+		{
+			GameObject menu = GameObject.FindGameObjectWithTag ("Main Menu");
+			Destroy (menu);
+			StartServer ();
+		}
+	}
+
+	private void StartServer()
+	{
+		useNat = !Network.HavePublicAddress ();
+		Network.InitializeServer(numConnections, portNum, useNat);
+		MasterServer.RegisterHost(typeName, gameName);    // Dont think this is necessary -AG
+	}
+
+	// If StartServer is successful, this will be called
+	void OnServerInitialized()
+	{
+		Debug.Log("Server Initializied");
+
+		GameObject serverScreen = Object.Instantiate (serverScreenPrefab);
+		foreach (Text child in serverScreen.GetComponentsInChildren<Text>())
+		{
+			if (child.CompareTag ("ServerInfo"))
+			{
+				if (useNat)
+				{
+					child.text = "GUID: " + Network.player.guid;
+				}
+				else
+				{
+					child.text = "IP: " + Network.player.externalIP + "\n" + "Host: " + Network.player.externalPort;
+				}
+			}
+		}
+	}
+
+	// Not 100% that this is the right function
+	void OnPlayerConnected(NetworkPlayer player)
+	{
+		Debug.Log ("Player joined the network!");
+		GameObject serverScreen = GameObject.FindGameObjectWithTag ("Server Screen");
+		Destroy (serverScreen);
+		Cardboard.SDK.VRModeEnabled = true;
+		SpawnPlayer ();
+	}
+
+
+	/********************
+	 * Client Side Code *
+	 ********************/
+	public void clientButtonClick ()
+	{
+		if (!Network.isClient && !Network.isServer)
+		{
+			GameObject menu = GameObject.FindGameObjectWithTag ("Main Menu");
+			Destroy (menu);
+
+			GameObject clientScreen = Object.Instantiate (clientScreenPrefab);
+
+			foreach (Button child in clientScreen.GetComponentsInChildren<Button>())
+			{
+				if (child.CompareTag ("GUIDButton"))
+				{
+					child.onClick.AddListener(() => ClientButtonSelector (true));
+				}
+				else if (child.CompareTag ("IPButton"))
+				{
+					child.onClick.AddListener(() => ClientButtonSelector (false));
+				}
+			}
+		}
+	}
+
+	public void ClientButtonSelector (bool GUID)
+	{
+		GameObject menu = GameObject.FindGameObjectWithTag ("Client Screen");
+		Destroy (menu);
+
+		GameObject clientScreen;
+		if (GUID)
+		{
+			clientScreen = Object.Instantiate (clientGUIDScreenPrefab);
+		}
+		else
+		{
+			clientScreen = Object.Instantiate (clientIPScreenPrefab);
+		}
+
+		foreach (Button child in clientScreen.GetComponentsInChildren<Button>())
+		{
+			if (child.CompareTag ("GUIDButton"))
+			{
+				child.onClick.AddListener (() => ClientInputSubmit (true));
+			}
+			else if (child.CompareTag ("IPButton"))
+			{
+				child.onClick.AddListener (() => ClientInputSubmit (false));
+			}
+		}
+	}
+
+	public void ClientInputSubmit (bool GUID)
+	{
+		if (GUID)
+		{
+			GameObject guidScreen = GameObject.FindGameObjectWithTag ("GUID Input");
+
+			Text guidInput = GameObject.FindGameObjectWithTag ("GUIDInfo").GetComponent<Text> ();
+			Network.Connect (guidInput.text);
+		}
+		else
+		{
+			GameObject ipScreen = GameObject.FindGameObjectWithTag ("IP Input");
+
+			Text ipInput = GameObject.FindGameObjectWithTag ("IPInfo").GetComponent<Text> ();
+			Text hostInput = GameObject.FindGameObjectWithTag ("HostInfo").GetComponent<Text> ();
+			int hostVal = 0;
+			if (int.TryParse (hostInput.text, out hostVal))
+				Network.Connect (ipInput.text, hostVal);
+			else
+				OnFailedToConnect (NetworkConnectionError.IncorrectParameters);
+		}
+	}
+
+	void OnConnectedToServer()
+	{
+		GameObject guidScreen = GameObject.FindGameObjectWithTag ("GUID Input");
+		GameObject ipScreen = GameObject.FindGameObjectWithTag ("IP Input");
+		if (guidScreen != null)
+			Destroy (guidScreen);
+		else
+			Destroy (ipScreen);
+
+		Debug.Log ("We fucking logged into a server!");
+	}
+
+	void OnFailedToConnect(NetworkConnectionError error)
+	{
+		GameObject guidScreen = GameObject.FindGameObjectWithTag ("GUID Input");
+		GameObject ipScreen = GameObject.FindGameObjectWithTag ("IP Input");
+		if (guidScreen != null)
+			Destroy (guidScreen);
+		else
+			Destroy (ipScreen);
+
+		GameObject clientScreen = Object.Instantiate (clientScreenPrefab);
+		foreach (Text child in clientScreen.GetComponentsInChildren<Text>())
+		{
+			if (child.CompareTag ("ClientInfo"))
+			{
+				child.text = "Uh oh. We couldn't connect to that server. Let's try this again, does the server phone display a GUID or an IP&Host?";
+			}
+		}
+		foreach (Button child in clientScreen.GetComponentsInChildren<Button>())
+		{
+			if (child.CompareTag ("GUIDButton"))
+			{
+				child.onClick.AddListener(() => ClientButtonSelector (true));
+			}
+			else if (child.CompareTag ("IPButton"))
+			{
+				child.onClick.AddListener(() => ClientButtonSelector (false));
+			}
+		}
+	}
 }

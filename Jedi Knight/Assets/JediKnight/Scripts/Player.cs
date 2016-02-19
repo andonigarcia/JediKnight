@@ -38,7 +38,6 @@ public class Player : MonoBehaviour {
 
 		foreach (Transform child in gameObject.GetComponentsInChildren<Transform>() )
 		{
-			Debug.Log(child.tag);
 			if (child.CompareTag ("Saber"))
 			{
 				child.Rotate(movement * speed * Time.deltaTime);
