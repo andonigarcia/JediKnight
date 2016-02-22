@@ -139,15 +139,15 @@ public class NetworkManager : MonoBehaviour {
 		{
 			GameObject guidScreen = GameObject.FindGameObjectWithTag ("GUID Input");
 
-			Text guidInput = GameObject.FindGameObjectWithTag ("GUIDInfo").GetComponent<Text> ();
+			InputField guidInput = GameObject.FindGameObjectWithTag ("GUIDInfo").GetComponent<InputField> ();
 			Network.Connect (guidInput.text);
 		}
 		else
 		{
 			GameObject ipScreen = GameObject.FindGameObjectWithTag ("IP Input");
 
-			Text ipInput = GameObject.FindGameObjectWithTag ("IPInfo").GetComponent<Text> ();
-			Text hostInput = GameObject.FindGameObjectWithTag ("HostInfo").GetComponent<Text> ();
+			InputField ipInput = GameObject.FindGameObjectWithTag ("IPInfo").GetComponent<InputField> ();
+			InputField hostInput = GameObject.FindGameObjectWithTag ("HostInfo").GetComponent<InputField> ();
 			int hostVal = 0;
 			if (int.TryParse (hostInput.text, out hostVal))
 				Network.Connect (ipInput.text, hostVal);
