@@ -2,6 +2,7 @@
 
 
 var healthBarSlider : UnityEngine.UI.Slider;
+var gameOverObject : GameObject[];
 
 function Start () {
 
@@ -9,6 +10,12 @@ function Start () {
 
 function Update () {
 
+	if(healthBarSlider.value <=0){
+		gameOverObject = GameObject.FindGameObjectsWithTag("GameOver");
+		for(g in gameOverObject){
+			g.SetActive(true);
+		}
+	}
 	
 }
 

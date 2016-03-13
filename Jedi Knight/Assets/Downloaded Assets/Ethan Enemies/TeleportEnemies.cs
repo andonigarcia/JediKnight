@@ -77,13 +77,13 @@ public class TeleportEnemies : MonoBehaviour {
 	
   }
 
+
 	public void OnTriggerEnter (Collider other){
-		Debug.Log ("I hit something");
-		if (other.gameObject.tag == "Saber") {
-			Debug.Log ("I hit the saber");
+		if ((other.gameObject.name == "Beam")) {
 			TeleportRandomly ();
 			//score increment
 		}
+
 
 	}
 

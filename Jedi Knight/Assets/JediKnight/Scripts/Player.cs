@@ -16,6 +16,9 @@ public class Player : MonoBehaviour {
 
 	void Update()
 	{
+		//gameObject.transform.rotation =  Quaternion.identity;
+		//uncomment when slamdoni gets here
+
 		gameObject.transform.position =  Vector3.zero;
 
 		Debug.Log ("nview isMine: " + nView.isMine.ToString());
@@ -59,8 +62,9 @@ public class Player : MonoBehaviour {
 					prev_pos = movement;
 				}*/
 
-				child.localRotation = new Quaternion(-position.x, position.z, position.y, -position.w);
+				child.localRotation = new Quaternion(position.x, position.z, position.y, -position.w);
 				gameObject.transform.rotation =  Quaternion.identity;
+
 			}
 		}
 	}
@@ -71,7 +75,7 @@ public class Player : MonoBehaviour {
 	[RPC]
 	public void ReadMessage(Quaternion aMsg)
 	{
-		Debug.Log ("The message is: " + aMsg.ToString());
+		//Debug.Log ("The message is: " + aMsg.ToString());
 		InputMovement (aMsg);
 	}
 }
