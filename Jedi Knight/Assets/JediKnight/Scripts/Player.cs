@@ -17,6 +17,7 @@ public class Player : MonoBehaviour {
 	void Update()
 	{
 		gameObject.transform.position =  Vector3.zero;
+
 		Debug.Log ("nview isMine: " + nView.isMine.ToString());
 		if (nView.isMine)
 		{
@@ -24,14 +25,16 @@ public class Player : MonoBehaviour {
 		}
 		else
 		{
-			Vector3 ourPos = new Vector3 (Input.acceleration.x, Input.acceleration.y, Input.acceleration.z);
+			//Vector3 ourPos = new Vector3 (Input.acceleration.x, Input.acceleration.y, Input.acceleration.z);
+			Quaternion ourPos = Input.gyro.attitude;
 			Debug.Log ("Message: " + ourPos.ToString ());
 			nView.RPC ("ReadMessage", RPCMode.All, ourPos);
 		}
 	}
 
-	public void InputMovement(Vector3 position)
+	public void InputMovement(Quaternion position)
 	{
+		/*
 		Vector3 movement = position;
 
 		if (SystemInfo.deviceType == DeviceType.Desktop) {
@@ -43,17 +46,20 @@ public class Player : MonoBehaviour {
 				movement += Vector3.right;
 			else if (Input.GetKey (KeyCode.A))
 				movement += Vector3.left;
-		}
+		}*/
 
 		foreach (Transform child in gameObject.GetComponentsInChildren<Transform>() )
 		{
 			if (child.CompareTag ("Saber"))
 			{
-				if (Vector3.Magnitude (movement - prev_pos) > Threshold)
+				/*if (Vector3.Magnitude (movement - prev_pos) > Threshold)
 				{
-					child.Rotate ((movement - prev_pos) * speed * Time.deltaTime);
+					//child.Rotate ((movement - prev_pos) * speed * Time.deltaTime);
+					child.Rotate(movement - prev_pos);
 					prev_pos = movement;
-				}
+				}*/
+
+				child.localRotation = new Quaternion(-position.x, position.z, position.y, -position.w);
 			}
 		}
 	}
@@ -61,9 +67,8 @@ public class Player : MonoBehaviour {
 	/******************
 	 * Messaging Code *
 	 ******************/
-
 	[RPC]
-	public void ReadMessage(Vector3 aMsg)
+	public void ReadMessage(Quaternion aMsg)
 	{
 		Debug.Log ("The message is: " + aMsg.ToString());
 		InputMovement (aMsg);
