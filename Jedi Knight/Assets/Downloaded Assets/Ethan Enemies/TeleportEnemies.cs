@@ -79,10 +79,7 @@ public class TeleportEnemies : MonoBehaviour {
 	}
 
   public void TeleportRandomly() {
-
-	for (int j = 0; j < 50000000; j++) {
-		}
-			
+				
 	Vector3 direction = Random.onUnitSphere;
     //direction.y = Mathf.Clamp(direction.y, 0.5f, 1f);
     //float distance = 2 * Random.value + 1.5f;
