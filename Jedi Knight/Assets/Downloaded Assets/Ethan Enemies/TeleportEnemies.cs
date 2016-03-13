@@ -80,8 +80,8 @@ public class TeleportEnemies : MonoBehaviour {
 
 	public void OnTriggerEnter (Collider other){
 		if ((other.gameObject.name == "Beam")) {
-			TeleportRandomly ();
-			//score increment
+			TeleportRandomly ();		
+
 		}
 
 
