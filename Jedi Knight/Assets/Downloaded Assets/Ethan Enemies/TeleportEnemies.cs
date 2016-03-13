@@ -65,12 +65,27 @@ public class TeleportEnemies : MonoBehaviour {
 	}
 
   public void TeleportRandomly() {
+	Debug.Log ("I am teleporting randomly");
+
 	Vector3 direction = Random.onUnitSphere;
     //direction.y = Mathf.Clamp(direction.y, 0.5f, 1f);
     //float distance = 2 * Random.value + 1.5f;
 	float howFarAwayIsEthan = Vector3.Distance(ethan.position, this.transform.position);
+	//have to change teleport position to one of the random ones around ethan
 	transform.localPosition = direction * howFarAwayIsEthan;
 	transform.LookAt(ethan);
 	
   }
+
+	public void OnTriggerEnter (Collider other){
+		Debug.Log ("I hit something");
+		if (other.gameObject.tag == "Saber") {
+			Debug.Log ("I hit the saber");
+			TeleportRandomly ();
+			//score increment
+		}
+
+	}
+
+
 }

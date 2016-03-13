@@ -60,6 +60,7 @@ public class Player : MonoBehaviour {
 				}*/
 
 				child.localRotation = new Quaternion(-position.x, position.z, position.y, -position.w);
+				gameObject.transform.rotation =  Quaternion.identity;
 			}
 		}
 	}

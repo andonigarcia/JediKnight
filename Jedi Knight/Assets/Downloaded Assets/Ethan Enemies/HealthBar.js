@@ -14,6 +14,10 @@ function Update () {
 
 
 function OnTriggerEnter (other : Collider) {
-		//Destroy(other.gameObject);
-		healthBarSlider.value -=.02f;
+
+		if(other.gameObject.tag == "Bullet"){
+			//Destroy(other.gameObject);
+			healthBarSlider.value -=.02f;
+
+		}
 }
