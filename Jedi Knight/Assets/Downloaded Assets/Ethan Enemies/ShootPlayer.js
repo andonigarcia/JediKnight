@@ -17,6 +17,5 @@ if(Time.time % 3 < 0.0005){
  blt.velocity = transform.TransformDirection(Vector3(0,0,speed));
  Destroy(blt.gameObject,3);
 
-
    }
 }
