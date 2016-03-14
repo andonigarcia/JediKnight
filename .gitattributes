@@ -8,3 +8,7 @@
 *.mat filter=lfs diff=lfs merge=lfs -text
 *.prefab filter=lfs diff=lfs merge=lfs -text
 *.tga filter=lfs diff=lfs merge=lfs -text
+Jedi[[:space:]]Knight/Assets/TempEthan.prefab filter=lfs diff=lfs merge=lfs -text
+Jedi[[:space:]]Knight/Assets/Downloaded[[:space:]]Assets/Ethan[[:space:]]Enemies/GameOverText.js filter=lfs diff=lfs merge=lfs -text
+Jedi[[:space:]]Knight/Assets/Downloaded[[:space:]]Assets/IncrementScore.js filter=lfs diff=lfs merge=lfs -text
+Jedi[[:space:]]Knight/Assets/EthanSaberTest.js filter=lfs diff=lfs merge=lfs -text
