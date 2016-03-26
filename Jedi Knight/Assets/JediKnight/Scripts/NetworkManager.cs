@@ -16,15 +16,27 @@ public class NetworkManager : MonoBehaviour {
 	private const int portNum = 23400;
 	private const string typeName = "JediKnight";
 	private const string gameName = "Lightsaber";
+	private GameObject[] enemyobj;
 
 	void Start()
 	{
 		Cardboard.SDK.VRModeEnabled = false;
+
+		enemyobj = GameObject.FindGameObjectsWithTag("EthanEnemies");
+
+		foreach(GameObject g in enemyobj){
+			g.SetActive(false);
+		}
 	}
 
 	private void SpawnPlayer()
 	{
 		Network.Instantiate(playerPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, 0);
+
+
+		foreach(GameObject g in enemyobj){
+			g.SetActive(true);
+		}
 	}
 
 	/********************
@@ -44,7 +56,7 @@ public class NetworkManager : MonoBehaviour {
 	{
 		useNat = !Network.HavePublicAddress ();
 		Network.InitializeServer(numConnections, portNum, useNat);
-		MasterServer.RegisterHost(typeName, gameName);    // Dont think this is necessary -AG
+		MasterServer.RegisterHost(typeName, gameName);
 	}
 
 	// If StartServer is successful, this will be called
